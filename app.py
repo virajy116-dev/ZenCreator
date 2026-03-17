@@ -1,6 +1,5 @@
 import streamlit as st
 import google.generativeai as genai
-import speech_recognition as sr
 
 # 1. AI API Configuration
 # अपनी Gemini API Key यहाँ डालें (अगर अभी नहीं है तो इसे ऐसे ही रहने दें)
