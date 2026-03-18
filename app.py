@@ -1,48 +1,40 @@
 import streamlit as st
-from openai import OpenAI
+import google.generativeai as genai
 
-# Page setup
-st.set_page_config(page_title="Zen Creator Studio", page_icon="🌿")
+# Essential Configuration
+st.set_page_config(page_title="AI Video Studio", page_icon="🎥")
 
-# API Key
-try:
-    client = OpenAI(api_key=st.secrets["OPENAI_API_KEY"])
-except:
-    st.error("API Key missing! Add it in Streamlit secrets.")
-    st.stop()
+# Connect to Gemini API
+if "GEMINI_API_KEY" in st.secrets:
+    genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
+else:
+    st.error("API Key not found in Secrets!")
 
-# UI
-st.title("🌿 Zen Creator Studio")
-st.write("Welcome VR. Enter your video topic below.")
+# App Interface
+st.title("🚀 Zen Creator Studio")
+st.write("Hello VR! Let's build your next viral video.")
 
-topic = st.text_input("Enter Topic", placeholder="e.g. MrBeast challenge")
+# Input Field
+user_topic = st.text_input("Enter your video topic:", placeholder="e.g. MrBeast Challenge")
 
-if st.button("Generate Content"):
-    if topic.strip() != "":
-        with st.spinner("Generating..."):
+# Button Logic
+if st.button("Generate Script ✨"):
+    if user_topic:
+        with st.spinner("AI is crafting your script..."):
             try:
-                response = client.chat.completions.create(
-                    model="gpt-4.1-mini",
-                    messages=[
-                        {"role": "system", "content": "You are a professional YouTube content creator."},
-                        {"role": "user", "content": f"""
-Create in Hinglish:
-1. Viral Title
-2. Full Script
-3. Description
-4. 10 Hashtags
-5. Viral Caption
-
-Topic: {topic}
-"""}
-                    ]
-                )
-
-                st.divider()
-                st.subheader("Your Content")
-                st.write(response.choices[0].message.content)
-
+                # Using the rock-solid gemini-pro engine
+                model = genai.GenerativeModel("gemini-pro")
+                
+                # The Instruction
+                prompt = f"Create a viral YouTube video title and a detailed script in Hinglish for the topic: {user_topic}. Make it high energy and engaging like MrBeast."
+                
+                response = model.generate_content(prompt)
+                
+                st.markdown("---")
+                st.subheader("🔥 Your Viral Script:")
+                st.write(response.text)
+                st.success("Success! Copy and start filming.")
             except Exception as e:
-                st.error(f"Error: {e}")
+                st.error(f"Error: {str(e)}")
     else:
-        st.warning("Please enter a topic first.")
+        st.warning("Please enter a topic first!")
