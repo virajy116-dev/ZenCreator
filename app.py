@@ -1,37 +1,38 @@
 import streamlit as st
 import google.generativeai as genai
 
-# Page Config
+# Setup Page
 st.set_page_config(page_title="Zen Creator Studio", page_icon="🌿")
 
-# API Key setup from Secrets
-try:
-    if "GEMINI_API_KEY" in st.secrets:
-        api_key = st.secrets["GEMINI_API_KEY"]
-        genai.configure(api_key=api_key)
-    else:
-        st.error("API Key नहीं मिली! कृपया Manage app > Settings > Secrets में GEMINI_API_KEY डालें।")
-except Exception as e:
-    st.error(f"Secrets Error: {e}")
+# Initialize API
+if "GEMINI_API_KEY" in st.secrets:
+    genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
+else:
+    st.error("Key not found in Secrets!")
 
-# UI Design
+# User Interface
 st.title("🌿 Zen Creator Studio")
-st.write(f"नमस्ते VR, शांत मन से अपना टॉपिक बताएं।")
+st.write("Namaste VR, enter your topic below:")
 
-topic = st.text_input("टॉपिक यहाँ लिखें:", placeholder="उदा: MrBeast style challenge")
+# Input area
+topic = st.text_input("Topic:", placeholder="e.g. MrBeast style challenge")
 
-if st.button("Create My Weekly Magic ✨"):
+if st.button("Create Magic ✨"):
     if topic:
-        with st.spinner("AI सोच रहा है..."):
+        with st.spinner("AI is thinking..."):
             try:
-                # Using the stable 'gemini-pro' model
-                model = genai.GenerativeModel("gemini-pro")
-                response = model.generate_content(f"Create a viral YouTube script and title for: {topic}")
+                # Using the latest stable model
+                model = genai.GenerativeModel("gemini-1.5-flash")
+                
+                # Command to AI
+                prompt = f"Write a viral YouTube script and title in Hinglish for: {topic}"
+                response = model.generate_content(prompt)
                 
                 st.markdown("---")
-                st.subheader("🚀 आपकी जादुई स्क्रिप्ट:")
+                st.subheader("🚀 Your Script:")
                 st.write(response.text)
             except Exception as e:
-                st.error(f"Error: {e}")
+                st.error(f"Error: {str(e)}")
     else:
+        st.warning("Please enter a topic first!")
         st.warning("कृपया पहले कुछ लिखें!")
