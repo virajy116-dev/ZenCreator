@@ -5,10 +5,10 @@ import google.generativeai as genai
 st.set_page_config(page_title="Zen Creator Studio", page_icon="🌿")
 
 # API Key setup
-if "GEMINI_API_KEY" in st.secrets:
+try:
     genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
-else:
-    st.error("⚠️ API Key missing in Secrets!")
+except:
+    st.error("API Key missing! Please add GEMINI_API_KEY in secrets.")
     st.stop()
 
 # Title
@@ -16,27 +16,25 @@ st.title("🌿 Zen Creator Studio")
 st.write("Welcome VR. Enter your video topic below.")
 
 # Input
-topic = st.text_input("Enter Topic:", placeholder="e.g. MrBeast style challenge")
+topic = st.text_input("Enter Topic", placeholder="e.g. MrBeast challenge")
 
-# Button click
+# Button
 if st.button("Generate Content"):
-    if topic:
-        with st.spinner("AI is generating magic... ✨"):
+    if topic.strip() != "":
+        with st.spinner("Generating..."):
             try:
-                # ✅ Latest working model
-                model = genai.GenerativeModel("gemini-1.5-flash-latest")
+                # ✅ Working model
+                model = genai.GenerativeModel("gemini-pro")
 
-                # Prompt
                 prompt = f"""
 You are a professional YouTube content creator.
 
-Create the following in Hinglish:
-
-1. 🔥 Viral Title
-2. 🎬 Full YouTube Script
-3. 📝 Description
-4. #️⃣ Hashtags (10-15)
-5. 📢 Viral Caption
+Create in Hinglish:
+1. Viral Title
+2. Full Script
+3. Description
+4. 10 Hashtags
+5. Viral Caption
 
 Topic: {topic}
 """
@@ -44,15 +42,10 @@ Topic: {topic}
                 response = model.generate_content(prompt)
 
                 st.divider()
-
-                st.subheader("🚀 Your Content:")
+                st.subheader("Your Content")
                 st.write(response.text)
 
             except Exception as e:
-                st.error(f"❌ System Error: {str(e)}")
-    else:
-        st.warning("⚠️ Please enter a topic first.")                st.error(f"System Error: {str(e)}")
+                st.error(f"Error: {e}")
     else:
         st.warning("Please enter a topic first.")
-        st.warning("Please enter a topic first!")
-        st.warning("कृपया पहले कुछ लिखें!")
